@@ -1,0 +1,519 @@
+{
+  "name": "Lobees Automations - Sync con Django (CORRECTO)",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "afe95e1f-8cea-4f1b-84e6-dd6cb701b3f3",
+              "leftValue": "={{ $json.executionstatus }}",
+              "rightValue": "1",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "5a7e007e-a4be-4447-922b-6fca6f1d4251",
+              "leftValue": "={{ $json.executionstatus }}",
+              "rightValue": "2",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "24884a8c-8791-4a83-a16d-3f8c230391ea",
+              "leftValue": "={{ $json.executionstatus }}",
+              "rightValue": "3",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        3360
+      ],
+      "id": "7b8cfe76-6ea8-4297-9359-48c77382eac5",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        464,
+        3360
+      ],
+      "id": "dbd40024-8f0e-4b1e-94ef-6819b2f8f12a",
+      "name": "Split Out1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.lobees.com/api/automationtaskschedule/proactive?email=dianita6441994@gmail.com",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Obtener Tarea API1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        272,
+        3360
+      ],
+      "id": "58962e8e-018e-472a-a699-59730971f841",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ltmLTV8QCy5R7hMT",
+          "name": "Header Auth account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "13bf2afb-ef64-450c-8b65-3ced760977c5",
+              "name": "taskid",
+              "value": "={{ $json.data.taskid }}",
+              "type": "string"
+            },
+            {
+              "id": "68b6408a-dc87-44cb-9257-6e225c6eac1d",
+              "name": "lead_email",
+              "value": "={{ $('Filter2').item.json.lead.email }}",
+              "type": "string"
+            },
+            {
+              "id": "749fe773-ef73-4eb2-9572-271aa16d78b5",
+              "name": "linkfor1",
+              "value": "==http://127.0.0.1:8000/form/step1/{{ $('Filter2').item.json.lead.email }}/{{ $('Filter2').item.json.taskid }}/?n8n_url={{ $execution.resumeUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "e9767272-b063-4d43-9ca4-124f4c9303b9",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        3360
+      ],
+      "id": "85a69b48-1173-4884-9bdf-301f7a34b93a",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.lobees.com/api/project/addtasklog",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"projecttask\": \"{{ $('Filter1').item.json.taskid }}\",\n  \"startdate\": \"{{ $('Filter1').item.json.startdate }}\",\n  \"hours\": 1,\n  \"description\": \"Formulario 1 enviado\",\n  \"taskpercent\": 100\n}",
+        "options": {}
+      },
+      "name": "Form1 Enviado",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1840,
+        3360
+      ],
+      "id": "a3b07db0-0ff2-4b22-85a5-513b65c09c66",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ltmLTV8QCy5R7hMT",
+          "name": "Header Auth account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "afe95e1f-8cea-4f1b-84e6-dd6cb701b3f3",
+              "leftValue": "={{ $json.taskid }}",
+              "rightValue": "=69de0df7ccccc895e19f33f1",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        912,
+        3360
+      ],
+      "id": "568c20e5-5320-413b-9cf1-e35ff8ae0641",
+      "name": "Filter2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.lobees.com/api/automationtaskschedule/webhook/n8n/callback",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ token: 'lobees-n8n-callback-2025', taskid: $json.taskid }) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1104,
+        3360
+      ],
+      "id": "b0774ac9-b624-4c2b-b80d-aa6cd4f58423",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ltmLTV8QCy5R7hMT",
+          "name": "Header Auth account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1520,
+        3360
+      ],
+      "id": "c507cc7d-2abe-4ac9-85e8-dbb648e913c4",
+      "name": "Wait Form 1",
+      "webhookId": "5e673121-fa99-4834-840e-31c779d1a86d"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        3360
+      ],
+      "id": "7ebbdc0d-9cf5-4b6f-aa49-97a4c9c1a725",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1536,
+        3584
+      ],
+      "id": "69fa70ad-b5dc-4321-bd98-f1d67bc74c58",
+      "name": "Wait form2",
+      "webhookId": "6a2063dc-8895-4008-900d-5579821b0d5e"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1552,
+        3808
+      ],
+      "id": "0721a998-0318-40b7-ac75-49bf9eb14705",
+      "name": "Wait form 3",
+      "webhookId": "f4f7adfa-fcf5-4cb7-863a-8b5120d82a35"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.lobees.com/api/project/addtasklog",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"projecttask\": \"{{ $('Filter1').item.json.taskid }}\",\n  \"startdate\": \"{{ $('Filter1').item.json.startdate }}\",\n  \"hours\": 1,\n  \"description\": \"Formulario 3 enviado\",\n  \"taskpercent\": 100\n}",
+        "options": {}
+      },
+      "name": "Form1 Enviado3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1904,
+        3808
+      ],
+      "id": "3c98b604-d1bb-4f29-b5d1-8200ca535bfb",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ltmLTV8QCy5R7hMT",
+          "name": "Header Auth account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.lobees.com/api/project/addtasklog",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"projecttask\": \"{{ $('Filter1').item.json.taskid }}\",\n  \"startdate\": \"{{ $('Filter1').item.json.startdate }}\",\n  \"hours\": 1,\n  \"description\": \"Formulario 2 enviado\",\n  \"taskpercent\": 100\n}",
+        "options": {}
+      },
+      "name": "Form2 Enviado",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1872,
+        3584
+      ],
+      "id": "b4a3d755-fdcb-48c0-a084-c59361ee4e42",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ltmLTV8QCy5R7hMT",
+          "name": "Header Auth account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.lobees.com/api/automationtaskschedule/webhook/n8n/callback",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ \"token\": \"lobees-n8n-callback-2025\", \"taskid\": $('Filter1').item.json.taskid }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2304,
+        3808
+      ],
+      "id": "61b4a534-eaf5-41cc-abc2-373d0d82bf24",
+      "name": "HTTP Request guardado y finalizado",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ltmLTV8QCy5R7hMT",
+          "name": "Header Auth account 4"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Filter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Tarea API1": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Wait Form 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form1 Enviado": {
+      "main": [
+        [
+          {
+            "node": "Wait form2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Form 1": {
+      "main": [
+        [
+          {
+            "node": "Form1 Enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Obtener Tarea API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait form2": {
+      "main": [
+        [
+          {
+            "node": "Form2 Enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait form 3": {
+      "main": [
+        [
+          {
+            "node": "Form1 Enviado3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form2 Enviado": {
+      "main": [
+        [
+          {
+            "node": "Wait form 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form1 Enviado3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request guardado y finalizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "948f69cd-98ef-451c-9778-fcccad8476f4",
+  "meta": {
+    "instanceId": "352b635f0d6542c92da0ed143a2ae39acf829f0a0ebb9cc952e6158e4813a99f"
+  },
+  "id": "Ac8EtmJ2wZkYTljv",
+  "tags": []
+}
