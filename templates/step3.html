@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lobees - Paso 3</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; background-color: #eff6ff; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        button { width: 100%; padding: 10px; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .error { color: red; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Paso 3: Canal de Contacto</h2>
+        <form id="form3">
+            {% csrf_token %}
+
+            <input type="hidden" id="lead_id" value="{{ lead_id }}">
+            <input type="hidden" id="task_id" value="{{ task_id }}">
+
+            <p>¿Cómo prefieres que te contactemos?<br>
+                <select name="channel" style="width: 100%; padding: 8px;">
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="email">Correo Electrónico</option>
+                    <option value="call">Llamada telefónica</option>
+                </select>
+            </p>
+
+            <p>Notas adicionales:<br>
+                <textarea name="notes" id="notes" style="width: 100%;" rows="3"></textarea>
+            </p>
+
+            <button type="button" id="btnFinish" onclick="sendStep3()">Finalizar Registro</button>
+            <p id="errorMsg" class="error"></p>
+        </form>
+    </div>
+
+    <script>
+        async function sendStep3() {
+            const btn = document.getElementById('btnFinish');
+            const errorMsg = document.getElementById('errorMsg');
+            const form = document.getElementById('form3');
+            errorMsg.textContent = "";
+
+
+            const formData = new FormData(form);
+
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const n8nResumeUrl = urlParams.get('n8n_url');
+
+            // 3. Construir el Payload final
+            const payload = {
+                lead_id: document.getElementById('lead_id').value,
+                task_id: document.getElementById('task_id').value,
+                resume_url: n8nResumeUrl,
+                response: {
+                    channel: formData.get('channel'),
+                    notes: formData.get('notes')
+                }
+            };
+
+            btn.disabled = true;
+            btn.textContent = "Finalizando...";
+
+            try {
+                const response = await fetch('/api/submit-step3/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.status === 201 || response.status === 200) {
+                    // Éxito: Redirigir a una página de confirmación o al admin para ver resultados
+                    alert("¡Registro completado con éxito!");
+                    window.location.href = "/admin/call_api/formresponse/";
+                } else {
+                    const errorData = await response.json();
+                    errorMsg.textContent = "Error: " + (errorData.message || JSON.stringify(errorData));
+                    btn.disabled = false;
+                    btn.textContent = "Finalizar Registro";
+                }
+            } catch (error) {
+                errorMsg.textContent = "Error de conexión con el servidor.";
+                btn.disabled = false;
+                btn.textContent = "Finalizar Registro";
+            }
+        }
+    </script>
+</body>
+</html>

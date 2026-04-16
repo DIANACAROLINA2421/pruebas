@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lobees - Paso 1</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding-top: 50px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; }
+        button { width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        .error { color: red; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Paso 1: Primer Contacto</h2>
+        <form id="form1">
+            {% csrf_token %}
+            <input type="hidden" id="lead_id" value="{{ lead_id }}">
+            <input type="hidden" id="task_id" value="{{ task_id }}">
+
+            <p>¿Sigue interesado en la reunión?<br>
+                <label><input type="radio" name="interested" value="true" checked> Sí</label>
+                <label><input type="radio" name="interested" value="false"> No</label>
+            </p>
+
+            <p>¿Quiere reprogramar?<br>
+                <label><input type="radio" name="reschedule" value="true" checked> Sí</label>
+                <label><input type="radio" name="reschedule" value="false"> No</label>
+            </p>
+
+            <p>Fecha preferida:<br>
+                <input type="date" name="preferred_date" required>
+            </p>
+
+            <button type="button" id="submitBtn" onclick="sendData()">Enviar Respuesta</button>
+            <p id="errorMsg" class="error"></p>
+        </form>
+    </div>
+
+    <script>
+        async function sendData() {
+            const btn = document.getElementById('submitBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.textContent = "";
+
+            const formData = new FormData(document.getElementById('form1'));
+            const preferredDate = formData.get('preferred_date');
+
+            if (!preferredDate) {
+                errorMsg.textContent = "Debes seleccionar una fecha.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Enviando...";
+
+            // Capturar n8n_url desde la URL del navegador
+            const urlParams = new URLSearchParams(window.location.search);
+            const n8nUrl = urlParams.get('n8n_url');
+
+            const payload = {
+                lead_id: document.getElementById('lead_id').value,
+                task_id: document.getElementById('task_id').value,
+                n8n_url: n8nUrl,
+                response: {
+                    interested: formData.get('interested') === 'true',
+                    reschedule: formData.get('reschedule') === 'true',
+                    preferred_date: preferredDate
+                }
+            };
+
+            try {
+                const res = await fetch('/api/submit-step1/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    // Pasar n8n_url al siguiente paso en la URL
+                    const leadId = payload.lead_id;
+                    const taskId = payload.task_id;
+                    window.location.href = `/form/step2/${leadId}/${taskId}/?n8n_url=${encodeURIComponent(n8nUrl)}`;
+                } else {
+                    const data = await res.json();
+                    errorMsg.textContent = data.error || "Error al enviar.";
+                    btn.disabled = false;
+                    btn.textContent = "Enviar Respuesta";
+                }
+            } catch (err) {
+                errorMsg.textContent = "Error de conexión con el servidor.";
+                btn.disabled = false;
+                btn.textContent = "Enviar Respuesta";
+            }
+        }
+    </script>
+</body>
+</html>
