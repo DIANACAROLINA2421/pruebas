@@ -23,6 +23,7 @@ if SECRET_KEY == "":
 
 if DEBUG:
     ALLOWED_HOSTS = ['flaxseed-circus-neutron.ngrok-free.dev', 'localhost', '127.0.0.1']
+    CSRF_TRUSTED_ORIGINS = ['https://flaxseed-circus-neutron.ngrok-free.dev']
 else:
     ALLOWED_HOSTS = config("ALLOWED_HOSTS", default=[])
 
@@ -61,8 +62,7 @@ ROOT_URLCONF = 'BacketMpforall.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
