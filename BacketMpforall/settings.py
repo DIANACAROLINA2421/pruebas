@@ -55,6 +55,23 @@ MIDDLEWARE = [
 
 # 🌍 Configuración de URLs y WSGI
 ROOT_URLCONF = "BacketMpforall.urls"
+# 🧩 Configuración de plantillas
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],  # puedes dejarlo vacío si no usas plantillas personalizadas
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
 WSGI_APPLICATION = "BacketMpforall.wsgi.application"
 
 # 🗄️ Base de datos
