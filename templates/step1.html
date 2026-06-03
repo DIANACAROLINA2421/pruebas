@@ -2,61 +2,395 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Lobees - Paso 1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Reunión – Paso 1</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding-top: 50px; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; }
-        button { width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
-        .error { color: red; margin-top: 10px; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f7f5f0;
+            --card: #ffffff;
+            --accent: #2d6a4f;
+            --accent-light: #d8f3dc;
+            --accent-dark: #1b4332;
+            --text: #1a1a1a;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --error: #dc2626;
+            --radius: 16px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 480px;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .step-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .step-dot.inactive {
+            background: var(--border);
+            color: var(--muted);
+        }
+
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 36px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.06);
+        }
+
+        .card-header {
+            margin-bottom: 28px;
+        }
+
+        .card-header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 26px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .radio-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .radio-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--muted);
+            transition: all 0.2s;
+            margin-bottom: 0;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            border-color: var(--accent);
+            background: var(--accent-light);
+            color: var(--accent-dark);
+            font-weight: 500;
+        }
+
+        .radio-option label:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+        }
+
+        .date-input-wrapper {
+            position: relative;
+        }
+
+        .date-input-wrapper input[type="date"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            color: var(--text);
+            background: white;
+            outline: none;
+            transition: border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .date-input-wrapper input[type="date"]:focus {
+            border-color: var(--accent);
+        }
+
+        .date-input-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        /* Time picker */
+        .time-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .time-select {
+            flex: 1;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            color: var(--text);
+            background: white;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .time-select:focus {
+            border-color: var(--accent);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 24px 0;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(45,106,79,0.3);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-msg {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--error);
+            display: none;
+        }
+
+        .error-msg.visible { display: block; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>Paso 1: Primer Contacto</h2>
-        <form id="form1">
-            {% csrf_token %}
-            <input type="hidden" id="lead_id" value="{{ lead_id }}">
-            <input type="hidden" id="task_id" value="{{ task_id }}">
+    <div class="wrapper">
+        <div class="progress">
+            <div class="step-dot active">1</div>
+            <div class="step-line"></div>
+            <div class="step-dot inactive">2</div>
+            <div class="step-line"></div>
+            <div class="step-dot inactive">3</div>
+        </div>
 
-            <p>¿Sigue interesado en la reunión?<br>
-                <label><input type="radio" name="interested" value="true" checked> Sí</label>
-                <label><input type="radio" name="interested" value="false"> No</label>
-            </p>
+        <div class="card">
+            <div class="card-header">
+                <h1>Primer Contacto</h1>
+                <p>Cuéntanos tus preferencias para la reunión.</p>
+            </div>
 
-            <p>¿Quiere reprogramar?<br>
-                <label><input type="radio" name="reschedule" value="true" checked> Sí</label>
-                <label><input type="radio" name="reschedule" value="false"> No</label>
-            </p>
+            <form id="form1">
+                {% csrf_token %}
+                <input type="hidden" id="lead_id" value="{{ lead_id }}">
+                <input type="hidden" id="task_id" value="{{ task_id }}">
 
-            <p>Fecha preferida:<br>
-                <input type="date" name="preferred_date" required>
-            </p>
+                <div class="field">
+                    <label>¿Sigue interesado en la reunión?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="interested" id="int-yes" value="true" checked>
+                            <label for="int-yes">✓ Sí, interesado</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="interested" id="int-no" value="false">
+                            <label for="int-no">✗ No, gracias</label>
+                        </div>
+                    </div>
+                </div>
 
-            <button type="button" id="submitBtn" onclick="sendData()">Enviar Respuesta</button>
-            <p id="errorMsg" class="error"></p>
-        </form>
+                <div class="field">
+                    <label>¿Quiere reprogramar?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="reschedule" id="res-yes" value="true" checked>
+                            <label for="res-yes">Sí, reprogramar</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="reschedule" id="res-no" value="false">
+                            <label for="res-no">Mantener fecha</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="field">
+                    <label>Fecha preferida</label>
+                    <div class="date-input-wrapper">
+                        <input type="date" name="preferred_date" id="preferred_date" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Hora preferida</label>
+                    <div class="time-group">
+                        <select name="preferred_hour" class="time-select">
+                            {% for h in "08 09 10 11 12 13 14 15 16 17 18 19"|split:" " %}
+                            <option value="{{ h }}:00">{{ h }}:00</option>
+                            {% endfor %}
+                        </select>
+                        <select name="preferred_minute" class="time-select">
+                            <option value="00">:00</option>
+                            <option value="15">:15</option>
+                            <option value="30">:30</option>
+                            <option value="45">:45</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-submit" id="submitBtn" onclick="sendData()">
+                    <span id="btnText">Continuar →</span>
+                    <div class="spinner" id="spinner"></div>
+                </button>
+                <div class="error-msg" id="errorMsg"></div>
+            </form>
+        </div>
     </div>
 
     <script>
+        // Set min date to today
+        document.getElementById('preferred_date').min = new Date().toISOString().split('T')[0];
+
         async function sendData() {
             const btn = document.getElementById('submitBtn');
             const errorMsg = document.getElementById('errorMsg');
-            errorMsg.textContent = "";
+            const spinner = document.getElementById('spinner');
+            const btnText = document.getElementById('btnText');
+
+            errorMsg.classList.remove('visible');
 
             const formData = new FormData(document.getElementById('form1'));
             const preferredDate = formData.get('preferred_date');
 
             if (!preferredDate) {
-                errorMsg.textContent = "Debes seleccionar una fecha.";
+                errorMsg.textContent = "Por favor selecciona una fecha.";
+                errorMsg.classList.add('visible');
                 return;
             }
 
             btn.disabled = true;
-            btn.textContent = "Enviando...";
+            btnText.textContent = "Enviando...";
+            spinner.style.display = 'block';
 
-            // Capturar n8n_url desde la URL del navegador
             const urlParams = new URLSearchParams(window.location.search);
             const n8nUrl = urlParams.get('n8n_url');
+
+            const hour = formData.get('preferred_hour') || '09';
+            const minute = formData.get('preferred_minute') || '00';
 
             const payload = {
                 lead_id: document.getElementById('lead_id').value,
@@ -65,7 +399,8 @@
                 response: {
                     interested: formData.get('interested') === 'true',
                     reschedule: formData.get('reschedule') === 'true',
-                    preferred_date: preferredDate
+                    preferred_date: preferredDate,
+                    preferred_time: `${hour}:${minute}`
                 }
             };
 
@@ -80,20 +415,21 @@
                 });
 
                 if (res.ok) {
-                    // Pasar n8n_url al siguiente paso en la URL
-                    const leadId = payload.lead_id;
-                    const taskId = payload.task_id;
-                    window.location.href = `/form/step2/${leadId}/${taskId}/?n8n_url=${encodeURIComponent(n8nUrl)}`;
+                    window.location.href = `/form/step2/${payload.lead_id}/${payload.task_id}/?n8n_url=${encodeURIComponent(n8nUrl || '')}`;
                 } else {
                     const data = await res.json();
-                    errorMsg.textContent = data.error || "Error al enviar.";
+                    errorMsg.textContent = data.error || "Error al enviar. Inténtalo de nuevo.";
+                    errorMsg.classList.add('visible');
                     btn.disabled = false;
-                    btn.textContent = "Enviar Respuesta";
+                    btnText.textContent = "Continuar →";
+                    spinner.style.display = 'none';
                 }
             } catch (err) {
-                errorMsg.textContent = "Error de conexión con el servidor.";
+                errorMsg.textContent = "Error de conexión. Verifica tu internet e inténtalo de nuevo.";
+                errorMsg.classList.add('visible');
                 btn.disabled = false;
-                btn.textContent = "Enviar Respuesta";
+                btnText.textContent = "Continuar →";
+                spinner.style.display = 'none';
             }
         }
     </script>

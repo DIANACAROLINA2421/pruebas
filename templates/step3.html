@@ -2,59 +2,357 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Lobees - Paso 3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Reunión – Paso 3</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; padding: 40px; background-color: #eff6ff; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        button { width: 100%; padding: 10px; background-color: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .error { color: red; margin-top: 10px; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #eff6ff;
+            --card: #ffffff;
+            --accent: #2563eb;
+            --accent-light: #dbeafe;
+            --accent-dark: #1e40af;
+            --text: #1a1a1a;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --error: #dc2626;
+            --success: #059669;
+            --radius: 16px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 480px;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .step-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .step-dot.done { background: var(--success); color: white; }
+        .step-dot.active { background: var(--accent); color: white; }
+        .step-dot.inactive { background: var(--border); color: var(--muted); }
+        .step-line { flex: 1; height: 2px; border-radius: 2px; }
+        .step-line.done { background: var(--success); }
+        .step-line.inactive { background: var(--border); }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 36px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.06);
+        }
+
+        .card-header { margin-bottom: 28px; }
+
+        .card-header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 26px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .field { margin-bottom: 20px; }
+
+        .field label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .channel-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .channel-option { position: relative; }
+
+        .channel-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .channel-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--muted);
+            transition: all 0.2s;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        .channel-option label .channel-icon {
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .channel-option input[type="radio"]:checked + label {
+            border-color: var(--accent);
+            background: var(--accent-light);
+            color: var(--accent-dark);
+            font-weight: 500;
+        }
+
+        .channel-option label:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            resize: vertical;
+            min-height: 90px;
+            outline: none;
+            transition: border-color 0.2s;
+            line-height: 1.5;
+        }
+
+        textarea:focus { border-color: var(--accent); }
+        textarea::placeholder { color: var(--muted); }
+
+        .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+        }
+
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-msg {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--error);
+            display: none;
+        }
+
+        .error-msg.visible { display: block; }
+
+        /* Success screen */
+        .success-screen {
+            text-align: center;
+            padding: 20px 0;
+            display: none;
+        }
+
+        .success-screen.visible { display: block; }
+
+        .success-icon {
+            width: 72px;
+            height: 72px;
+            background: #d1fae5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .success-screen h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 24px;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .success-screen p {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .form-content { transition: opacity 0.3s; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Paso 3: Canal de Contacto</h2>
-        <form id="form3">
-            {% csrf_token %}
+    <div class="wrapper">
+        <div class="progress" id="progressBar">
+            <div class="step-dot done">✓</div>
+            <div class="step-line done"></div>
+            <div class="step-dot done">✓</div>
+            <div class="step-line done"></div>
+            <div class="step-dot active">3</div>
+        </div>
 
-            <input type="hidden" id="lead_id" value="{{ lead_id }}">
-            <input type="hidden" id="task_id" value="{{ task_id }}">
+        <div class="card">
+            <div class="form-content" id="formContent">
+                <div class="card-header">
+                    <h1>Canal de Contacto</h1>
+                    <p>¿Cómo prefieres que nos comuniquemos contigo?</p>
+                </div>
 
-            <p>¿Cómo prefieres que te contactemos?<br>
-                <select name="channel" style="width: 100%; padding: 8px;">
-                    <option value="whatsapp">WhatsApp</option>
-                    <option value="email">Correo Electrónico</option>
-                    <option value="call">Llamada telefónica</option>
-                </select>
-            </p>
+                <form id="form3">
+                    {% csrf_token %}
+                    <input type="hidden" id="lead_id" value="{{ lead_id }}">
+                    <input type="hidden" id="task_id" value="{{ task_id }}">
 
-            <p>Notas adicionales:<br>
-                <textarea name="notes" id="notes" style="width: 100%;" rows="3"></textarea>
-            </p>
+                    <div class="field">
+                        <label>Medio de contacto preferido</label>
+                        <div class="channel-grid">
+                            <div class="channel-option">
+                                <input type="radio" name="channel" id="ch-whatsapp" value="whatsapp" checked>
+                                <label for="ch-whatsapp">
+                                    <span class="channel-icon">💬</span>
+                                    WhatsApp
+                                </label>
+                            </div>
+                            <div class="channel-option">
+                                <input type="radio" name="channel" id="ch-email" value="email">
+                                <label for="ch-email">
+                                    <span class="channel-icon">✉️</span>
+                                    Email
+                                </label>
+                            </div>
+                            <div class="channel-option">
+                                <input type="radio" name="channel" id="ch-call" value="call">
+                                <label for="ch-call">
+                                    <span class="channel-icon">📞</span>
+                                    Llamada
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
-            <button type="button" id="btnFinish" onclick="sendStep3()">Finalizar Registro</button>
-            <p id="errorMsg" class="error"></p>
-        </form>
+                    <div class="divider"></div>
+
+                    <div class="field">
+                        <label>Notas adicionales <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+                        <textarea name="notes" id="notes" placeholder="Cualquier detalle que quieras añadir..."></textarea>
+                    </div>
+
+                    <button type="button" class="btn-submit" id="btnFinish" onclick="sendStep3()">
+                        <span id="btnText">Finalizar registro ✓</span>
+                        <div class="spinner" id="spinner"></div>
+                    </button>
+                    <div class="error-msg" id="errorMsg"></div>
+                </form>
+            </div>
+
+            <div class="success-screen" id="successScreen">
+                <div class="success-icon">✓</div>
+                <h2>¡Todo listo!</h2>
+                <p>Hemos recibido tus preferencias.<br>Nos pondremos en contacto contigo pronto.</p>
+            </div>
+        </div>
     </div>
 
     <script>
         async function sendStep3() {
             const btn = document.getElementById('btnFinish');
             const errorMsg = document.getElementById('errorMsg');
+            const spinner = document.getElementById('spinner');
+            const btnText = document.getElementById('btnText');
             const form = document.getElementById('form3');
-            errorMsg.textContent = "";
 
+            errorMsg.classList.remove('visible');
 
             const formData = new FormData(form);
-
-
             const urlParams = new URLSearchParams(window.location.search);
             const n8nResumeUrl = urlParams.get('n8n_url');
 
-            // 3. Construir el Payload final
             const payload = {
                 lead_id: document.getElementById('lead_id').value,
                 task_id: document.getElementById('task_id').value,
-                resume_url: n8nResumeUrl,
+                n8n_url: n8nResumeUrl,
                 response: {
                     channel: formData.get('channel'),
                     notes: formData.get('notes')
@@ -62,7 +360,8 @@
             };
 
             btn.disabled = true;
-            btn.textContent = "Finalizando...";
+            btnText.textContent = "Finalizando...";
+            spinner.style.display = 'block';
 
             try {
                 const response = await fetch('/api/submit-step3/', {
@@ -75,19 +374,26 @@
                 });
 
                 if (response.status === 201 || response.status === 200) {
-                    // Éxito: Redirigir a una página de confirmación o al admin para ver resultados
-                    alert("¡Registro completado con éxito!");
-                    window.location.href = "/admin/call_api/formresponse/";
+                    document.getElementById('formContent').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('formContent').style.display = 'none';
+                        document.getElementById('progressBar').style.display = 'none';
+                        document.getElementById('successScreen').classList.add('visible');
+                    }, 300);
                 } else {
                     const errorData = await response.json();
                     errorMsg.textContent = "Error: " + (errorData.message || JSON.stringify(errorData));
+                    errorMsg.classList.add('visible');
                     btn.disabled = false;
-                    btn.textContent = "Finalizar Registro";
+                    btnText.textContent = "Finalizar registro ✓";
+                    spinner.style.display = 'none';
                 }
             } catch (error) {
-                errorMsg.textContent = "Error de conexión con el servidor.";
+                errorMsg.textContent = "Error de conexión. Verifica tu internet e inténtalo de nuevo.";
+                errorMsg.classList.add('visible');
                 btn.disabled = false;
-                btn.textContent = "Finalizar Registro";
+                btnText.textContent = "Finalizar registro ✓";
+                spinner.style.display = 'none';
             }
         }
     </script>

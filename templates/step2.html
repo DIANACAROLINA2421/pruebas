@@ -2,48 +2,314 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Lobees - Paso 2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Reunión – Paso 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; padding: 40px; background-color: #f0fdf4; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        button { width: 100%; padding: 10px; background-color: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .error { color: red; margin-top: 10px; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f0fdf4;
+            --card: #ffffff;
+            --accent: #059669;
+            --accent-light: #d1fae5;
+            --accent-dark: #065f46;
+            --text: #1a1a1a;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --error: #dc2626;
+            --radius: 16px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 480px;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .step-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .step-dot.done { background: var(--accent); color: white; }
+        .step-dot.active { background: var(--accent); color: white; }
+        .step-dot.inactive { background: var(--border); color: var(--muted); }
+        .step-line { flex: 1; height: 2px; border-radius: 2px; }
+        .step-line.done { background: var(--accent); }
+        .step-line.inactive { background: var(--border); }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 36px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.06);
+        }
+
+        .card-header { margin-bottom: 28px; }
+
+        .card-header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 26px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .field { margin-bottom: 20px; }
+
+        .field label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .radio-group { display: flex; flex-direction: column; gap: 10px; }
+
+        .radio-option { position: relative; }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .radio-option label {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--muted);
+            transition: all 0.2s;
+            margin-bottom: 0;
+            line-height: 1.4;
+        }
+
+        .radio-option label .radio-icon {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            border-color: var(--accent);
+            background: var(--accent-light);
+            color: var(--accent-dark);
+            font-weight: 500;
+        }
+
+        .radio-option input[type="radio"]:checked + label .radio-icon {
+            border-color: var(--accent);
+            background: var(--accent);
+        }
+
+        .radio-option input[type="radio"]:checked + label .radio-icon::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .radio-option label:hover {
+            border-color: var(--accent);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            resize: vertical;
+            min-height: 90px;
+            outline: none;
+            transition: border-color 0.2s;
+            line-height: 1.5;
+        }
+
+        textarea:focus { border-color: var(--accent); }
+        textarea::placeholder { color: var(--muted); }
+
+        .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5,150,105,0.3);
+        }
+
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-msg {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--error);
+            display: none;
+        }
+
+        .error-msg.visible { display: block; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Paso 2: Confirmar Horario</h2>
-        <form id="form2">
-            {% csrf_token %}
-            <input type="hidden" id="lead_id" value="{{ lead_id }}">
-            <input type="hidden" id="task_id" value="{{ task_id }}">
+    <div class="wrapper">
+        <div class="progress">
+            <div class="step-dot done">✓</div>
+            <div class="step-line done"></div>
+            <div class="step-dot active">2</div>
+            <div class="step-line inactive"></div>
+            <div class="step-dot inactive">3</div>
+        </div>
 
-            <p>¿Te funciona la hora propuesta para la reunión?<br>
-                <label><input type="radio" name="time_ok" value="true" checked> Sí, me va bien</label><br>
-                <label><input type="radio" name="time_ok" value="false"> No, prefiero otro momento</label>
-            </p>
+        <div class="card">
+            <div class="card-header">
+                <h1>Confirmar Horario</h1>
+                <p>¿Te viene bien el horario propuesto para la reunión?</p>
+            </div>
 
-            <p>Comentarios adicionales:<br>
-                <textarea name="notes" style="width: 100%;" rows="3"></textarea>
-            </p>
+            <form id="form2">
+                {% csrf_token %}
+                <input type="hidden" id="lead_id" value="{{ lead_id }}">
+                <input type="hidden" id="task_id" value="{{ task_id }}">
 
-            <div id="error-msg" class="error"></div>
-            <button type="submit" id="btn-submit">Confirmar Horario</button>
-        </form>
+                <div class="field">
+                    <label>¿Te funciona la hora propuesta?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="time_ok" id="time-yes" value="true" checked>
+                            <label for="time-yes">
+                                <span class="radio-icon"></span>
+                                <span>
+                                    <strong>Sí, me va bien</strong><br>
+                                    Confirmo el horario propuesto
+                                </span>
+                            </label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="time_ok" id="time-no" value="false">
+                            <label for="time-no">
+                                <span class="radio-icon"></span>
+                                <span>
+                                    <strong>Prefiero otro momento</strong><br>
+                                    Indicaré mis preferencias en los comentarios
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="field">
+                    <label>Comentarios adicionales <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+                    <textarea name="notes" placeholder="Horarios alternativos, preferencias especiales..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btn-submit">
+                    <span id="btnText">Confirmar y continuar →</span>
+                    <div class="spinner" id="spinner"></div>
+                </button>
+                <div class="error-msg" id="errorMsg"></div>
+            </form>
+        </div>
     </div>
 
     <script>
         const form = document.getElementById('form2');
         const btn = document.getElementById('btn-submit');
-        const errorMsg = document.getElementById('error-msg');
+        const errorMsg = document.getElementById('errorMsg');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btnText');
 
         form.onsubmit = async (e) => {
             e.preventDefault();
+            errorMsg.classList.remove('visible');
+
             const formData = new FormData(form);
-
-
             const urlParams = new URLSearchParams(window.location.search);
-            const n8nUrl = urlParams.get('n8n_url') || "";
+            const n8nUrl = urlParams.get('n8n_url') || '';
 
             const payload = {
                 lead_id: document.getElementById('lead_id').value,
@@ -56,7 +322,8 @@
             };
 
             btn.disabled = true;
-            btn.textContent = "Procesando...";
+            btnText.textContent = "Procesando...";
+            spinner.style.display = 'block';
 
             try {
                 const response = await fetch('/api/submit-step2/', {
@@ -72,14 +339,18 @@
                     window.location.href = `/form/step3/${payload.lead_id}/${payload.task_id}/?n8n_url=${encodeURIComponent(n8nUrl)}`;
                 } else {
                     const errorData = await response.json();
-                    errorMsg.textContent = "Error: " + (errorData.error || "Fallo en el servidor");
+                    errorMsg.textContent = errorData.error || "Error en el servidor. Inténtalo de nuevo.";
+                    errorMsg.classList.add('visible');
                     btn.disabled = false;
-                    btn.textContent = "Confirmar Horario";
+                    btnText.textContent = "Confirmar y continuar →";
+                    spinner.style.display = 'none';
                 }
             } catch (error) {
-                errorMsg.textContent = "Error de conexión.";
+                errorMsg.textContent = "Error de conexión. Verifica tu internet e inténtalo de nuevo.";
+                errorMsg.classList.add('visible');
                 btn.disabled = false;
-                btn.textContent = "Confirmar Horario";
+                btnText.textContent = "Confirmar y continuar →";
+                spinner.style.display = 'none';
             }
         };
     </script>
