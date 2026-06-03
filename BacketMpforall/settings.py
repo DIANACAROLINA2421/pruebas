@@ -5,6 +5,7 @@ Configurado para despliegue en Render.
 
 from pathlib import Path
 from decouple import config
+import dj_database_url
 
 # 📁 Directorio base
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -55,11 +57,12 @@ MIDDLEWARE = [
 
 # 🌍 Configuración de URLs y WSGI
 ROOT_URLCONF = "BacketMpforall.urls"
+
 # 🧩 Configuración de plantillas
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],  # puedes dejarlo vacío si no usas plantillas personalizadas
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -74,12 +77,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "BacketMpforall.wsgi.application"
 
-# 🗄️ Base de datos
+# 🗄️ Base de datos — PostgreSQL en Render, SQLite en local
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+    )
 }
 
 # 🔐 Validadores de contraseñas
@@ -99,6 +102,7 @@ USE_TZ = True
 # 📂 Archivos estáticos
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # 🔓 CORS
 CORS_ALLOW_ALL_ORIGINS = True
